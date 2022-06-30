@@ -131,17 +131,17 @@ impl Board {
     // solves the board and returns true if a valid solution was found
     fn solve(&mut self) -> bool {
         let slots = self.empty_slots();
-        self.solve_internal(&slots, 0)
+        self.solve_internal(&slots)
     }
 
     // recursively solves the board given the slots to be filled
-    fn solve_internal(&mut self, slots: &[(usize, usize)], depth: usize) -> bool {
-        if depth == slots.len() {
+    fn solve_internal(&mut self, slots: &[(usize, usize)]) -> bool {
+        if slots.len() == 0 {
             // all slots are filled with no conflicts
             true
         } else {
             // try to insert a valid value and solve one level deeper
-            let (r, c) = slots[depth];
+            let (r, c) = slots[0];
             let i = r * 9 + c;
             let valid = self.valid_for_position(r, c);
             if valid.len() == 0 {
@@ -151,7 +151,7 @@ impl Board {
                 // there are valid numbers for this position, try all of them
                 let viable = valid.iter().any(|&n| {
                     self.data[i] = n;
-                    self.solve_internal(slots, depth + 1)
+                    self.solve_internal(&slots[1..])
                 });
                 // if all paths from here were invalid, we set the cell to 0 and backtrack
                 if !viable {
