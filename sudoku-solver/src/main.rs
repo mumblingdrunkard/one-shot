@@ -8,9 +8,20 @@
 // Copyright © 2022 mumblingdrunkard
 
 fn main() {
-    let mut board = Board::test_board1();
-    board.solve();
-    println!("{}", board);
+    let mut n = String::new();
+    std::io::stdin()
+        .read_line(&mut n)
+        .expect("Input was not a string");
+    let n: usize = n.trim().parse().unwrap();
+    for _ in 0..n {
+        let mut s = String::new();
+        std::io::stdin()
+            .read_line(&mut s)
+            .expect("Input was not a string");
+        let mut b = Board::from_str(&s.trim());
+        b.solve();
+        println!("{}\n", b);
+    }
 }
 
 struct Board {
@@ -84,6 +95,7 @@ impl Board {
         }
     }
 
+    #[allow(unused)]
     fn test_board1() -> Self {
         Self {
             #[rustfmt::skip]
@@ -99,6 +111,23 @@ impl Board {
                    0, 4, 0,  5, 0, 0,  8, 9, 1,
                    0, 8, 0,  0, 3, 7,  0, 0, 0],
         }
+    }
+
+    fn new() -> Self {
+        Self { data: [0; 81] }
+    }
+
+    fn from_str(s: &str) -> Self {
+        if s.len() != 81 {
+            panic!("Input string is of incorrect length");
+        }
+
+        let mut b = Self::new();
+        b.data
+            .iter_mut()
+            .zip(s.chars())
+            .for_each(|(n, c)| *n = c.to_digit(10).unwrap() as i8);
+        b
     }
 }
 
