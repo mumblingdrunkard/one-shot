@@ -27,17 +27,17 @@ impl Board {
 
         // column
         (0..9)
-            .map(|r| self.data[r * 9 + c])
+            .map(|r| self[r][c])
             .for_each(|n| valid[n as usize] = false);
 
         // row
         (0..9)
-            .map(|c| self.data[r * 9 + c])
+            .map(|c| self[r][c])
             .for_each(|n| valid[n as usize] = false);
 
         // box ( don't worry about the index calculation :) )
         (0..9)
-            .map(|k| self.data[9 * ((r / 3) * 3 + k / 3) + (c / 3) * 3 + k % 3])
+            .map(|k| self[(r / 3) * 3 + k / 3][(c / 3) * 3 + k % 3])
             .for_each(|n| valid[n as usize] = false);
 
         // map the array of boolean values to an array of numbers derived from the indices that
@@ -73,14 +73,13 @@ impl Board {
 
         // try to insert valid values and solve one level deeper
         let (r, c) = slots[0];
-        let i = r * 9 + c;
         self.valid_for_position(r, c).iter().any(|&n| {
-            self.data[i] = n;
+            self[r][c] = n;
             self.solve_internal(&slots[1..]) // solve remaining slots
         }) || {
             // this block evaluates only if the `||` did not short-circuit ⇒ the previous
             // expression was true
-            self.data[i] = 0;
+            self[r][c] = 0;
             false
         }
     }
@@ -103,12 +102,25 @@ impl Board {
     }
 }
 
+impl std::ops::Index<usize> for Board {
+    type Output = [i8];
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.data[(index * 9)..(index * 9 + 9)]
+    }
+}
+
+impl std::ops::IndexMut<usize> for Board {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.data[(index * 9)..(index * 9 + 9)]
+    }
+}
+
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         let mut result = String::new();
         for r in 0..9 {
             for c in 0..9 {
-                result.push_str(&format!("{} ", self.data[r * 9 + c]));
+                result.push_str(&format!("{} ", self[r][c]));
                 if c % 3 == 2 && c != 8 {
                     result.push_str("| ");
                 }
