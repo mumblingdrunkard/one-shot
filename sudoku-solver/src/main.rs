@@ -13,7 +13,6 @@ fn main() {
     println!("{}", board);
 }
 
-#[derive(Debug)]
 struct Board {
     data: [i8; 81],
 }
@@ -36,7 +35,7 @@ impl Board {
             .map(|c| self.data[r * 9 + c])
             .for_each(|n| valid[n as usize] = false);
 
-        // box
+        // box ( don't worry about the index calculation :) )
         (0..9)
             .map(|k| self.data[9 * ((r / 3) * 3 + k / 3) + (c / 3) * 3 + k % 3])
             .for_each(|n| valid[n as usize] = false);
@@ -86,7 +85,6 @@ impl Board {
         }
     }
 
-    #[allow(unused)]
     fn test_board1() -> Self {
         Self {
             #[rustfmt::skip]
@@ -102,11 +100,6 @@ impl Board {
                    0, 4, 0,  5, 0, 0,  8, 9, 1,
                    0, 8, 0,  0, 3, 7,  0, 0, 0],
         }
-    }
-
-    #[allow(unused)]
-    fn new() -> Self {
-        Self { data: [0; 81] }
     }
 }
 
