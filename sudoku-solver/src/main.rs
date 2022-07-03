@@ -7,8 +7,6 @@
 //
 // Copyright © 2022 mumblingdrunkard
 
-use smallvec::SmallVec;
-
 fn main() {
     let mut n = String::new();
     std::io::stdin()
@@ -35,8 +33,9 @@ struct Board {
 }
 
 impl Board {
-    // returns a Vec of all the numbers that are valid for the given position on the board
-    fn valid_for_position(&self, r: usize, c: usize) -> SmallVec<[u8; 10]> {
+    // returns an array of length 10 indicating the valid numbers for a given row and column such
+    // that n is valid if array[n] is true.
+    fn valid_for_position(&self, r: usize, c: usize) -> [bool; 10] {
         // let all numbers be valid, then invalidate numbers as they are found in the row, column,
         // and box of the given coordinate
         let mut valid = [true; 10];
@@ -57,13 +56,7 @@ impl Board {
             .map(|k| self[(r / 3) * 3 + k / 3][(c / 3) * 3 + k % 3])
             .for_each(|n| valid[n as usize] = false);
 
-        // map the array of boolean values to an array of numbers derived from the indices that
-        // still contain `true`
         valid
-            .iter()
-            .enumerate()
-            .filter_map(|(i, &v)| v.then(|| i as u8))
-            .collect()
     }
 
     // returns a Vec of all the empty slots on the board
@@ -90,15 +83,20 @@ impl Board {
 
         // try to insert valid values and solve one level deeper
         let (r, c) = slots[0];
-        self.valid_for_position(r, c).iter().any(|&n| {
-            self[r][c] = n;
-            self.solve_internal(&slots[1..]) // solve remaining slots
-        }) || {
-            // this block evaluates only if the `||` did not short-circuit; i.e. the previous
-            // expression was false
-            self[r][c] = 0;
-            false
-        }
+        self.valid_for_position(r, c)
+            .iter()
+            .enumerate()
+            .filter_map(|(i, v)| v.then(|| i as u8))
+            .any(|n| {
+                self[r][c] = n;
+                self.solve_internal(&slots[1..]) // solve remaining slots
+            })
+            || {
+                // this block evaluates only if the `||` did not short-circuit; i.e. the previous
+                // expression was false
+                self[r][c] = 0;
+                false
+            }
     }
 
     fn new() -> Self {
