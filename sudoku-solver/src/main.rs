@@ -7,6 +7,8 @@
 //
 // Copyright © 2022 mumblingdrunkard
 
+use smallvec::SmallVec;
+
 fn main() {
     let mut n = String::new();
     std::io::stdin()
@@ -29,12 +31,12 @@ fn main() {
 }
 
 struct Board {
-    data: [i8; 81],
+    data: [u8; 81],
 }
 
 impl Board {
     // returns a Vec of all the numbers that are valid for the given position on the board
-    fn valid_for_position(&self, r: usize, c: usize) -> Vec<i8> {
+    fn valid_for_position(&self, r: usize, c: usize) -> SmallVec<[u8; 10]> {
         // let all numbers be valid, then invalidate numbers as they are found in the row, column,
         // and box of the given coordinate
         let mut valid = [true; 10];
@@ -60,8 +62,8 @@ impl Board {
         valid
             .iter()
             .enumerate()
-            .filter_map(|(i, &v)| v.then(|| i as i8))
-            .collect::<Vec<i8>>()
+            .filter_map(|(i, &v)| v.then(|| i as u8))
+            .collect()
     }
 
     // returns a Vec of all the empty slots on the board
@@ -92,8 +94,8 @@ impl Board {
             self[r][c] = n;
             self.solve_internal(&slots[1..]) // solve remaining slots
         }) || {
-            // this block evaluates only if the `||` did not short-circuit ⇒ the previous
-            // expression was true
+            // this block evaluates only if the `||` did not short-circuit; i.e. the previous
+            // expression was false
             self[r][c] = 0;
             false
         }
@@ -112,13 +114,13 @@ impl Board {
         b.data
             .iter_mut()
             .zip(s.chars())
-            .for_each(|(n, c)| *n = c.to_digit(10).unwrap() as i8);
+            .for_each(|(n, c)| *n = c.to_digit(10).unwrap() as u8);
         b
     }
 }
 
 impl std::ops::Index<usize> for Board {
-    type Output = [i8];
+    type Output = [u8];
     fn index(&self, index: usize) -> &Self::Output {
         &self.data[(index * 9)..(index * 9 + 9)]
     }
