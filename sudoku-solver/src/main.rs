@@ -13,12 +13,16 @@ fn main() {
         .read_line(&mut n)
         .expect("Input was not a string");
     let n: usize = n.trim().parse().unwrap();
+    let mut boards = Vec::new();
     for _ in 0..n {
         let mut s = String::new();
         std::io::stdin()
             .read_line(&mut s)
             .expect("Input was not a string");
-        let mut b = Board::from_str(&s.trim());
+        boards.push(Board::from_str(&s.trim()));
+    }
+
+    for mut b in boards {
         b.solve();
         println!("{}\n", b);
     }
@@ -92,24 +96,6 @@ impl Board {
             // expression was true
             self[r][c] = 0;
             false
-        }
-    }
-
-    #[allow(unused)]
-    fn test_board1() -> Self {
-        Self {
-            #[rustfmt::skip]
-            data: [0, 0, 0,  7, 9, 0,  0, 5, 0,
-                   3, 5, 2,  0, 0, 8,  0, 4, 0,
-                   0, 0, 0,  0, 0, 0,  0, 8, 0,
-
-                   0, 1, 0,  0, 7, 0,  0, 0, 4,
-                   6, 0, 0,  3, 0, 1,  0, 0, 8,
-                   9, 0, 0,  0, 8, 0,  0, 1, 0,
-
-                   0, 2, 0,  0, 0, 0,  0, 0, 0,
-                   0, 4, 0,  5, 0, 0,  8, 9, 1,
-                   0, 8, 0,  0, 3, 7,  0, 0, 0],
         }
     }
 
