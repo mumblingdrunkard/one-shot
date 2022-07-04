@@ -22,6 +22,7 @@ fn main() {
         boards.push(Board::from_str(&s.trim()));
     }
 
+    // want to multithread this? turn this loop into a parallel iterator with rayon
     for mut b in boards {
         b.solve();
         println!("{}\n", b);
