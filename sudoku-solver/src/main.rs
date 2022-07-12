@@ -33,6 +33,21 @@ struct Board {
     data: [u8; 81],
 }
 
+pub trait Or {
+    fn or<F>(&self, f: F) -> bool
+    where
+        F: FnOnce() -> bool;
+}
+
+impl Or for bool {
+    fn or<F>(&self, f: F) -> Self
+    where
+        F: FnOnce() -> bool,
+    {
+        *self || f()
+    }
+}
+
 impl Board {
     // returns an array of length 10 indicating the valid numbers for a given row and column such
     // that n is valid if array[n] is true.
@@ -87,17 +102,15 @@ impl Board {
         self.valid_for_position(r, c)
             .iter()
             .enumerate()
-            .filter_map(|(i, v)| v.then(|| i as u8))
+            .filter_map(|(i, n)| n.then(|| i as u8))
             .any(|n| {
                 self[r][c] = n;
                 self.solve_internal(&slots[1..]) // solve remaining slots
             })
-            || {
-                // this block evaluates only if the `||` did not short-circuit; i.e. the previous
-                // expression was false
+            .or(|| {
                 self[r][c] = 0;
                 false
-            }
+            })
     }
 
     fn new() -> Self {
