@@ -33,21 +33,6 @@ struct Board {
     data: [u8; 81],
 }
 
-pub trait Or {
-    fn or<F>(&self, f: F) -> bool
-    where
-        F: FnOnce() -> bool;
-}
-
-impl Or for bool {
-    fn or<F>(&self, f: F) -> Self
-    where
-        F: FnOnce() -> bool,
-    {
-        *self || f()
-    }
-}
-
 impl Board {
     // returns an array of length 10 indicating the valid numbers for a given row and column such
     // that n is valid if array[n] is true.
@@ -163,5 +148,20 @@ impl std::fmt::Display for Board {
         }
         write!(f, "{}", result) // write in a single call so we can use the Result here instead of
                                 // accumulating a Result through several write! invocations
+    }
+}
+
+pub trait Or {
+    fn or<F>(&self, f: F) -> bool
+    where
+        F: FnOnce() -> bool;
+}
+
+impl Or for bool {
+    fn or<F>(&self, f: F) -> Self
+    where
+        F: FnOnce() -> bool,
+    {
+        *self || f()
     }
 }
