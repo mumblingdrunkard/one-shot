@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "sudoku-solver"
+name = "sudoku-solver-rs"
 version = "0.1.0"
